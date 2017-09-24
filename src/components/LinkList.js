@@ -1,28 +1,31 @@
 import React, { Component } from 'react';
 import Link from './Link';
+import {
+	createFragmentContainer,
+	graphql,
+} from 'react-relay';
 
-const mockLinks = [
-	{
-		"description": "Graphql",
-		"url": "https://graphcool.com",
-		id: '1',
-	},
-	{
-		"description": "highly performant graphQL",
-		"url": "https://facebook.github.io/relay",
-		id: '2',
-	},
-]
-export default class LinkList extends Component {
+class LinkList extends Component {
   render() {
+		console.log(this.props.viewer, 'are viewer')
 		return(
 			<div>
-				{
-					mockLinks.map((link) => {
-						return <Link link={link} key={link.id}/>
+				{this.props.viewer.allLinks.edges.map(({node}) => {
+						return <Link link={ node } key={node.__id}/>
 					})
 				}
 			</div>
 		)
 	}
 }
+export default createFragmentContainer(LinkList, graphql`
+	fragment LinkList_viewer on Viewer {
+		allLinks(last: 100, orderBy: createdAt_DESC) @connection(key: "LinkList_allLinks", filters: []) {
+			edges {
+				node {
+					...Link_link
+				}
+			}
+		}
+	}
+`)

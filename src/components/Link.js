@@ -1,12 +1,25 @@
 import React, { Component } from 'react';
+import {
+	createFragmentContainer,
+	graphql,
+} from 'react-relay';
 
-export default class Link extends Component {
+class Link extends Component {
 	render () {
-		const {description, url} = this.props.link;
+		console.log(this.props.link)
+		const {description, url, cursor} = this.props.link;
 		return (
 			<div>
-			  <div>{description} ({url})</div>
+			  <div>{cursor} ({url})</div>
 			</div>
 		)
 	}
 }
+
+export default createFragmentContainer(Link, graphql`
+	fragment Link_link on Link {
+		id
+		description
+		url
+	}
+`)
